@@ -6,16 +6,21 @@ export default function Home() {
   const [num2, setNum2] = useState<number | null>(null);
   const [op, setOp] = useState<string | null>(null);
   const [result, setResult] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleCalculate= async () => {
+    setLoading(true);
     if (num1 === null || num2 === null || op === '') {
       alert('Complete todos los campos para continuar');
       return;
     }
-    const response = await fetch('http://localhost:3001/result')
-    const data = await response.json();
-    setResult(data.result);
-    
+    try {
+      const response = await fetch(`http://localhost:3001/result?num1=${num1}&num2=${num2}&op=${op}`)
+      const data = await response.json();
+      setResult(data.result);
+    } finally{
+      setLoading(false)
+    }
   }
 
   return (
@@ -45,7 +50,10 @@ export default function Home() {
       >
         Calcular
       </button>
-      {result !== null && <div className="mt-4">
+      <div className="font-bold text-gray-300">
+          {loading && <p>Loading...</p>}
+      </div>
+      {result !== null && <div className="font-bold text-gray-300 mt-4">
         {result}
         </div>}
     </div>
